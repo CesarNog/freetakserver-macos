@@ -1,0 +1,26 @@
+--- a/Dockerfile
++++ b/Dockerfile
+@@ -2,12 +2,12 @@
+ 
+ # don't use root, let's not have FTS be used as a priv escalation in the wild
+ RUN groupadd -r freetak && useradd -m -r -g freetak freetak
+-RUN mkdir /opt/fts ; chown -R freetak:freetak /opt/fts ; chmod 775 /opt/fts ; chmod a+w /var/log
++RUN mkdir -p /opt/fts/Logs ; touch /opt/fts/FTSDataBase.db ; chown -R freetak:freetak /opt/fts ; chmod 775 /opt/fts ; chmod a+w /var/log
+ 
+ USER freetak
+ 
+ # This needs the trailing slash
+-ENV FTS_DATA_PATH = "/opt/fts/"
++ENV FTS_DATA_PATH="/opt/fts/"
+ 
+ # Move to the FTS directory, then do the copying and unpacking
+ WORKDIR /home/freetak/
+@@ -19,6 +19,8 @@
+ ENV PATH /home/freetak/.local/bin:$PATH
+ RUN pip install --upgrade pip ; pip install setuptools wheel poetry ; pip install --force-reinstall "ruamel.yaml<0.18"
+ RUN pip install --no-build-isolation --editable .
++# opentelemetry-sdk >=1.34 makes BatchSpanProcessor.span_exporter read-only; DigitalPy assigns it
++RUN pip install "opentelemetry-sdk==1.33.1" "opentelemetry-api==1.33.1"
+ 
+ VOLUME /opt/fts
+ 

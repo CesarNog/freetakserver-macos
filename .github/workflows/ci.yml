@@ -1,0 +1,20 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: shellcheck install.sh
+      - run: |
+          printf 'FTS_FED_PASSWORD=x\nFTS_CLIENT_CERT_PASSWORD=x\nFTS_SECRET_KEY=x\nFTS_NODE_ID=x\n' > .env
+          docker compose config -q
+  smoke-linux-amd64:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - run: ./install.sh
+      - run: python3 scripts/test_cot.py
+      - if: failure()
+        run: docker compose logs --tail 200
