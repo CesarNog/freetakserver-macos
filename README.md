@@ -21,12 +21,13 @@ python3 scripts/test_cot.py   # optional smoke test
 
 | Port  | Service |
 |-------|---------|
+| 8081  | Data Package (HTTP, container 8080; override with `FTS_DP_HTTP_PORT` in `.env`) |
 | 8087  | CoT (TCP) |
 | 8089  | CoT (SSL) |
 | 8443  | Marti / Data Package (HTTPS) |
 | 19023 | REST API (auth required) |
 
-Federation (9000) is not published. The upstream compose publishes `8080`, which nothing listens on; the REST API is on `19023`. To accept connections from other devices (e.g. a phone running ATAK), change the `127.0.0.1:` prefixes in `compose.yaml` and keep in mind that CoT 8087 is unauthenticated.
+Federation (9000) is not published. Host port 8081 (not 8080) avoids clashing with other local services. Note: Docker accepts connections on published ports before the service inside listens; the stack needs ~1 min to be really ready (`scripts/wait_ready.py` checks this). To accept connections from other devices (e.g. a phone running ATAK), change the `127.0.0.1:` prefixes in `compose.yaml` and keep in mind that CoT 8087 is unauthenticated.
 
 The FreeTAKHub web UI is a separate project and is not included.
 

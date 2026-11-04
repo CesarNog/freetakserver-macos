@@ -9,6 +9,8 @@ services:
     volumes:
       - free-tak-core-db:/opt/fts/
     ports:
+      # DataPackagePort (HTTP); starts ~1 min after the others
+      - "127.0.0.1:${FTS_DP_HTTP_PORT:-8081}:8080"
       # CoTPort
       - "127.0.0.1:8087:8087"
       # SSLCoTPort

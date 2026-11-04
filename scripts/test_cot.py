@@ -1,4 +1,4 @@
-import socket, sys, time, urllib.request, ssl
+import socket, subprocess, sys, time, urllib.request, ssl
 from datetime import datetime, timedelta, timezone
 
 HOST = "127.0.0.1"
@@ -23,6 +23,7 @@ def drain(s):
         pass
     return out.decode(errors="replace")
 
+subprocess.run([sys.executable, __file__.replace("test_cot.py", "wait_ready.py")], check=True)
 a = socket.create_connection((HOST, 8087), timeout=5)
 a.sendall(event("uid-A", "ALPHA")); time.sleep(2)
 b = socket.create_connection((HOST, 8087), timeout=5)

@@ -38,19 +38,9 @@ fi
 
 docker compose up -d --build
 
-for i in $(seq 1 60); do
-  if python3 - <<'PY' 2>/dev/null
-import socket, sys
-for p in (8087, 8089, 8443, 19023):
-    s = socket.socket(); s.settimeout(1)
-    if s.connect_ex(("127.0.0.1", p)) != 0:
-        sys.exit(1)
-PY
-  then
-    echo "FreeTAKServer up: CoT 8087, SSL CoT 8089, Marti/DP 8443, REST API 19023 (loopback only)"
-    exit 0
-  fi
-  sleep 2
-done
-echo "ports not open after 120s; check: docker compose logs" >&2
-exit 1
+if python3 scripts/wait_ready.py 180; then
+  echo "FreeTAKServer up: CoT 8087, SSL CoT 8089, Marti/DP 8443, REST API 19023 (loopback only)"
+else
+  echo "services not ready after 180s; check: docker compose logs" >&2
+  exit 1
+fi
